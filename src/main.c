@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <sys/select.h>
 
 int main_loop(t_Chip8 *chip8)
 {
@@ -13,6 +14,7 @@ int main_loop(t_Chip8 *chip8)
 	{
 		nibble = fetch_nibble(chip8->pc, chip8->memory);
 		chip8->pc += 2;
+		select_opcode(nibble);
 	}
 	return (0);
 }

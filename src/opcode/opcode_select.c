@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-uint8_t	select_opcode_8(t_nibble nibble)
+static uint8_t	select_opcode_8(t_nibble nibble)
 {
 	if (nibble.n == 0)
 		return (2); // 8XY0 | LD VX, VY - set VX = VY
@@ -25,7 +25,7 @@ uint8_t	select_opcode_8(t_nibble nibble)
 	return (1);
 }
 
-uint8_t	select_opcode_ex(t_nibble nibble)
+static uint8_t	select_opcode_ex(t_nibble nibble)
 {
 	if (nibble.nn == 0x9E)
 		return (2); // EX9E | SKP VX - skip if key VX pressed
@@ -34,7 +34,7 @@ uint8_t	select_opcode_ex(t_nibble nibble)
 	return (1);
 }
 
-uint8_t	select_opcode_fx(t_nibble nibble)
+static uint8_t	select_opcode_fx(t_nibble nibble)
 {
 	if (nibble.nn == 0x07)
 		return (2); // FX07 | LD VX, DT - VX = delay timer
