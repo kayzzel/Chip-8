@@ -23,9 +23,7 @@ DEPS			=	-MMD -MP
 
 UTILS_SRCS				:=	$(addprefix $(UTILS_DIR), \)
 
-
 MAIN_SRCS		:=	main.c
-
 
 SRCS			:=	$(addprefix $(SRC_DIR), \
 					$(MAIN_SRCS) \
@@ -36,21 +34,13 @@ SRCS			:=	$(addprefix $(SRC_DIR), \
 OBJS			=	$(patsubst %.c,$(OBJ_DIR)%.o,$(SRCS))
 DEPENDENCIES	=	$(OBJS:.o=.d)
 
-BOBJS			=	$(patsubst %.c,$(OBJ_DIR)%.o,$(BONUS_SRCS))
-BDEPENDENCIES	=	$(BOBJS:.o=.d)
-
 #-------------------------------- RULES --------------------------------------#
 
 
 all: $(NAME)
 
-bonus: $(BONUS_NAME)
-
 $(NAME): $(OBJS)
 	$(CC) $(OBJS) -o $(NAME)  $(LDFLAGS)
-
-$(BONUS_NAME): $(BOBJS)
-	$(CC) $(BOBJS) -o $(BONUS_NAME) $(LDFLAGS)
 
 $(OBJ_DIR)%.o: %.c
 	mkdir -p $(dir $@)
@@ -71,15 +61,11 @@ fclean:
 re: fclean
 	$(MAKE) all
 
-print-%:
-	@echo $($(patsubst print-%,%,$@))
-
 compile_flags:
 	@echo "-I./$(INCLUDE_DIR)" > compile_flags.txt
 	@echo "$(CFLAGS)" | tr ' ' '\n' >> compile_flags.txt
 	@echo "Generating compile_flags.txt done"
 
 -include $(DEPENDENCIES)
--include $(BDEPENDENCIES)
 
 .PHONY: all clean fclean re print-% test
