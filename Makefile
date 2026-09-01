@@ -21,12 +21,21 @@ DEPS			=	-MMD -MP
 
 #-------------------------------- SOURCE FILES -------------------------------#
 
-UTILS_SRCS				:=	$(addprefix $(UTILS_DIR), \)
+UTILS_SRCS				:=	$(addprefix $(UTILS_DIR), \
+							files_utils.c \
+							print_utils.c \
+							)
 
-MAIN_SRCS		:=	main.c
+OPCODE_SRC		:=	opcode/opcode_select.c
+
+MAIN_SRCS		:=	main.c \
+					loading.c \
+					screem.c
 
 SRCS			:=	$(addprefix $(SRC_DIR), \
 					$(MAIN_SRCS) \
+					$(OPCODE_SRC) \
+					$(UTILS_SRCS) \
 					)
 
 #-------------------------------- OBJECTS ------------------------------------#
@@ -53,7 +62,6 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 fclean:
-	rm -f $(BONUS_NAME)
 	rm -f $(NAME)
 	rm -rf $(OBJ_DIR)
 
