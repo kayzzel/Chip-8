@@ -30,7 +30,7 @@ OPCODE_SRC		:=	opcode/opcode_select.c
 
 MAIN_SRCS		:=	main.c \
 					loading.c \
-					screem.c
+					screen.c
 
 SRCS			:=	$(addprefix $(SRC_DIR), \
 					$(MAIN_SRCS) \
