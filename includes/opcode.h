@@ -20,6 +20,6 @@ typedef struct s_nibble
 
 // FUNCS
 
-uint8_t	select_opcode(t_nibble nibble);
+uint8_t	exec_opcode(t_nibble nibble);
 
 #endif
