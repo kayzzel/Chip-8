@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   chip_8.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kayzzel <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/31 11:53:06 by kayzzel           #+#    #+#             */
-/*   Updated: 2026/08/31 12:02:41 by kayzzel          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CHIP_8_H
 # define CHIP_8_H
 
@@ -25,6 +13,10 @@
 
 # define SCREEN_WIDTH 64
 # define SCREEN_HEIGHT 32
+#define TARGET_FPS 60
+
+#define US_PER_FRAME (1000000L / TARGET_FPS)
+#define INSTRUCTIONS_PER_FRAME 10
 
 // STRUCTS
 
@@ -50,5 +42,10 @@ void		load_font(t_Chip8 *chip8);
 
 t_nibble	load_nibble(uint16_t opcode);
 t_nibble	fetch_nibble(uint16_t pc, uint8_t memory[MEMORY_SIZE]);
+
+int aff_screen(const uint8_t screen[SCREEN_HEIGHT * SCREEN_WIDTH]);
+
+void poll_keypad_input(t_Chip8 *chip_8);
+void set_conio_terminal_mode();
 
 #endif

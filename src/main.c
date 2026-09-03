@@ -2,20 +2,47 @@
 #include "opcode.h"
 #include "utils.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/select.h>
+#include <unistd.h>
 
 int main_loop(t_Chip8 *chip8)
 {
-	t_nibble nibble;
+	bool		running;
+	t_nibble	nibble;
+	long		last_time;
+	long		elapsed_time;
 
-	while (1)
+	init_time();
+
+	last_time = get_time_usec();
+	running = true;
+	set_conio_terminal_mode();
+	while (running)
 	{
-		nibble = fetch_nibble(chip8->pc, chip8->memory);
-		chip8->pc += 2;
-		if (exec_opcode(nibble))
-			return (1);
+		for (int i = 0; i < INSTRUCTIONS_PER_FRAME; i++)
+		{
+			nibble = fetch_nibble(chip8->pc, chip8->memory);
+			chip8->pc += 2;
+			if (exec_opcode(nibble))
+				return (1);
+		}
+
+		elapsed_time = get_time_usec() - last_time ;
+		if (elapsed_time >= US_PER_FRAME)
+		{
+			if (chip8->delay_timer > 0) chip8->delay_timer--;
+			if (chip8->sound_timer > 0) chip8->sound_timer--;
+
+			last_time = get_time_usec();
+
+			aff_screen(chip8->display);
+			poll_keypad_input(chip8);
+		}
+		else
+			usleep(US_PER_FRAME - elapsed_time);
 	}
 	return (0);
 }

@@ -72,6 +72,6 @@ t_nibble	fetch_nibble(uint16_t pc, uint8_t memory[MEMORY_SIZE])
 {
 	uint16_t opcode;
 
-	opcode = (memory[pc] << 8) + memory[pc + 1];
+	opcode = (memory[pc] << 8) | memory[pc + 1];
 	return load_nibble(opcode);
 }
