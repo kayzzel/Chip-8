@@ -24,13 +24,15 @@ DEPS			=	-MMD -MP
 UTILS_SRCS				:=	$(addprefix $(UTILS_DIR), \
 							files_utils.c \
 							print_utils.c \
+							time_utils.c \
 							)
 
 OPCODE_SRC		:=	opcode/opcode_select.c
 
 MAIN_SRCS		:=	main.c \
 					loading.c \
-					screen.c
+					screen.c \
+					keypad.c
 
 SRCS			:=	$(addprefix $(SRC_DIR), \
 					$(MAIN_SRCS) \
