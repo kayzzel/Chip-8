@@ -10,6 +10,7 @@
 // CONST
 
 # define MEMORY_SIZE 4096
+# define ROM_OFFSET 0x200
 
 # define SCREEN_WIDTH 64
 # define SCREEN_HEIGHT 32

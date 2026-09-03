@@ -10,7 +10,7 @@ void	putstr(char *str);
 void 	putline(char *str);
 void 	printError(char *err);
 
-uint8_t	*get_file_content(char *filename, t_Chip8 *chip8);
+uint8_t	*get_file_content(char *filename, t_Chip8 *chip8, long *count);
 
 long	get_time_usec(void);
 void	init_time(void);

@@ -26,7 +26,7 @@ int main_loop(t_Chip8 *chip8)
 		{
 			nibble = fetch_nibble(chip8->pc, chip8->memory);
 			chip8->pc += 2;
-			if (exec_opcode(nibble))
+			if (exec_opcode(nibble, chip8))
 				return (1);
 		}
 
@@ -69,7 +69,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	
-	chip8->pc = 0x200;
+	chip8->pc = ROM_OFFSET;
 	if (main_loop(chip8))
 	{
 		printError(chip8->error_message);

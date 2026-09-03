@@ -1,3 +1,4 @@
+#include "chip_8.h"
 #include "opcode.h"
 
 #include <stdint.h>
@@ -57,8 +58,9 @@ static uint8_t	select_opcode_fx(t_nibble nibble)
 	return (1);
 }
 
-uint8_t	exec_opcode(t_nibble nibble)
+uint8_t	exec_opcode(t_nibble nibble, t_Chip8 *chip8)
 {
+	(void)chip8;
 	if (nibble.opcode == 0x00E0)
 		return (2); // 00E0 | CLS - clear screen
 	else if (nibble.opcode == 0x00EE)

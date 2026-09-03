@@ -40,15 +40,16 @@ uint8_t	load_rom(char *filename, t_Chip8 *chip8)
 {
 	uint8_t	*rom;
 	int		index;
+	long	count;
 
-	rom = get_file_content(filename, chip8);
+	rom = get_file_content(filename, chip8, &count);
 	if (rom == NULL)
 		return (1);
 	
 	index = 0;
-	while (rom[index] != '\0')
+	while (index < count)
 	{
-		chip8->memory[index + 200] = rom[index];
+		chip8->memory[index + ROM_OFFSET] = rom[index];
 		index++;
 	}
 	return (0);

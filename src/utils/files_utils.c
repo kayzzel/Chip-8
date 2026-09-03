@@ -6,13 +6,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-uint8_t	*get_file_content(char *filename, t_Chip8 *chip8)
+uint8_t	*get_file_content(char *filename, t_Chip8 *chip8, long *count)
 {
 	uint8_t *content;
 	int 	char_read;
 	int 	fd;
 
-	content = malloc(sizeof(uint8_t) * MEMORY_SIZE - 200 + 2);
+	content = malloc(sizeof(uint8_t) * MEMORY_SIZE - ROM_OFFSET + 2);
 	if (content == NULL)
 	{
 		chip8->error_message = "Error during the memory allocation";
@@ -27,8 +27,8 @@ uint8_t	*get_file_content(char *filename, t_Chip8 *chip8)
 		return (NULL);
 	}
 
-	char_read = read(fd, content, MEMORY_SIZE - 200 + 2);
-	if (char_read > MEMORY_SIZE - 200)
+	char_read = read(fd, content, MEMORY_SIZE - ROM_OFFSET + 2);
+	if (char_read > MEMORY_SIZE - ROM_OFFSET)
 	{
 		free(content);
 		chip8->error_message = "Content of the file to large for the memory";
@@ -36,5 +36,6 @@ uint8_t	*get_file_content(char *filename, t_Chip8 *chip8)
 	}
 
 	content[char_read] = '\0';
+	*count = char_read;
 	return (content);
 }

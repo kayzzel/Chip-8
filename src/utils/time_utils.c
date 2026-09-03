@@ -6,7 +6,7 @@
 
 long	get_time_usec(void)
 {
-	static int		start_time = -1;
+	static long		start_time = -1;
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);

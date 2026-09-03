@@ -7,6 +7,8 @@
 
 // STRUCTS
 
+typedef struct s_Chip8 t_Chip8;
+
 typedef struct s_nibble
 {
 	uint16_t	opcode;
@@ -20,6 +22,6 @@ typedef struct s_nibble
 
 // FUNCS
 
-uint8_t	exec_opcode(t_nibble nibble);
+uint8_t	exec_opcode(t_nibble nibble, t_Chip8 *chip8);
 
 #endif
