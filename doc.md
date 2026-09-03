@@ -139,6 +139,81 @@ uint8_t fontset[80] = {
 | `FX55` | `LD [I], VX` | Store registers `V0` through `VX` into memory starting at `I`. |
 | `FX65` | `LD VX, [I]` | Read registers `V0` through `VX` from memory starting at `I`. |
 
+## 8b. Opcode Categories (suggested file split)
+
+If you want to split the switch statement across multiple source files instead of one giant `execute_opcode()`, here's a natural grouping by function. Each category could map to its own `.c`/`.h` pair.
+
+### `ops_flow.c` — control flow
+Jumps, calls, and conditional skips. No side effects on `V` registers besides `PC`.
+
+| Opcode | Mnemonic |
+|---|---|
+| `1NNN` | `JP NNN` |
+| `2NNN` | `CALL NNN` |
+| `00EE` | `RET` |
+| `BNNN` | `JP V0, NNN` |
+| `3XNN` | `SE VX, NN` |
+| `4XNN` | `SNE VX, NN` |
+| `5XY0` | `SE VX, VY` |
+| `9XY0` | `SNE VX, VY` |
+
+### `ops_registers.c` — register load/arithmetic/logic
+Everything that only touches `V0`–`VF` and immediate values, no memory or display access.
+
+| Opcode | Mnemonic |
+|---|---|
+| `6XNN` | `LD VX, NN` |
+| `7XNN` | `ADD VX, NN` |
+| `8XY0` | `LD VX, VY` |
+| `8XY1` | `OR VX, VY` |
+| `8XY2` | `AND VX, VY` |
+| `8XY3` | `XOR VX, VY` |
+| `8XY4` | `ADD VX, VY` |
+| `8XY5` | `SUB VX, VY` |
+| `8XY6` | `SHR VX` |
+| `8XY7` | `SUBN VX, VY` |
+| `8XYE` | `SHL VX` |
+| `CXNN` | `RND VX, NN` |
+
+### `ops_memory.c` — memory / index register / BCD
+Anything reading or writing `memory[]` via `I`, plus `I` itself.
+
+| Opcode | Mnemonic |
+|---|---|
+| `ANNN` | `LD I, NNN` |
+| `FX1E` | `ADD I, VX` |
+| `FX29` | `LD F, VX` |
+| `FX33` | `LD B, VX` |
+| `FX55` | `LD [I], VX` |
+| `FX65` | `LD VX, [I]` |
+
+### `ops_display.c` — screen
+| Opcode | Mnemonic |
+|---|---|
+| `00E0` | `CLS` |
+| `DXYN` | `DRW VX, VY, N` |
+
+### `ops_input.c` — keypad
+| Opcode | Mnemonic |
+|---|---|
+| `EX9E` | `SKP VX` |
+| `EXA1` | `SKNP VX` |
+| `FX0A` | `LD VX, K` |
+
+### `ops_timers.c` — delay/sound timers
+| Opcode | Mnemonic |
+|---|---|
+| `FX07` | `LD VX, DT` |
+| `FX15` | `LD DT, VX` |
+| `FX18` | `LD ST, VX` |
+
+### Dispatch notes
+
+- Top nibble `0x0`, `0x8`, `0xE`, `0xF` each fan out to multiple opcodes based on the lower byte or lower nibble — those need a nested switch (or a second-level lookup) inside the top-level dispatch.
+- A single `chip8_execute(Chip8 *c, uint16_t opcode)` in `cpu.c` can dispatch to `ops_flow_execute()`, `ops_registers_execute()`, etc. based on the top nibble, keeping the top-level switch small and each category file self-contained.
+- `8XY_` opcodes all share the top nibble `8` and are distinguished by the last nibble — natural to keep as one switch inside `ops_registers.c` rather than splitting further.
+- `FX__` opcodes span three different categories (memory, input, timers) by design — group by what they touch, not by their shared top nibble.
+
 ## 9. Main Loop Structure
 
 ```
