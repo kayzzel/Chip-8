@@ -26,25 +26,25 @@ static uint8_t	select_opcode_8(t_nibble nibble)
 	return (1);
 }
 
-static uint8_t	select_opcode_ex(t_nibble nibble)
+static uint8_t	select_opcode_ex(t_nibble nibble, t_Chip8 *chip8)
 {
 	if (nibble.nn == 0x9E)
-		return (2); // EX9E | SKP VX - skip if key VX pressed
+		return (skip_if_VX_pressed(chip8, nibble)); // EX9E | SKP VX - skip if key VX pressed
 	else if (nibble.nn == 0xA1)
-		return (2); // EXA1 | SKNP VX - skip if key VX not pressed
+		return (skip_if_VX_not_pressed(chip8, nibble)); // EXA1 | SKNP VX - skip if key VX not pressed
 	return (1);
 }
 
-static uint8_t	select_opcode_fx(t_nibble nibble)
+static uint8_t	select_opcode_fx(t_nibble nibble, t_Chip8 *chip8)
 {
 	if (nibble.nn == 0x07)
-		return (2); // FX07 | LD VX, DT - VX = delay timer
+		return (set_VX_to_delay_timer(chip8, nibble));
 	else if (nibble.nn == 0x0A)
-		return (2); // FX0A | LD VX, K - wait for key press
+		return (wait_VX_press(chip8, nibble));
 	else if (nibble.nn == 0x15)
-		return (2); // FX15 | LD DT, VX - delay timer = VX
+		return (set_delay_timer_to_VX(chip8, nibble));
 	else if (nibble.nn == 0x18)
-		return (2); // FX18 | LD ST, VX - sound timer = VX
+		return (set_sound_timer_to_VX(chip8, nibble));
 	else if (nibble.nn == 0x1E)
 		return (2); // FX1E | ADD I, VX - I += VX
 	else if (nibble.nn == 0x29)
@@ -62,7 +62,7 @@ uint8_t	exec_opcode(t_nibble nibble, t_Chip8 *chip8)
 {
 	(void)chip8;
 	if (nibble.opcode == 0x00E0)
-		return (2); // 00E0 | CLS - clear screen
+		return (clear_screen(chip8)); // 00E0 | CLS - clear screen
 	else if (nibble.opcode == 0x00EE)
 		return (2); // 00EE | RET - return from subroutine
 	else if (nibble.t == 1)
@@ -90,7 +90,7 @@ uint8_t	exec_opcode(t_nibble nibble, t_Chip8 *chip8)
 	else if (nibble.t == 0xC)
 		return (2); // CXNN | RND VX, NN - VX = random & NN
 	else if (nibble.t == 0xD)
-		return (2); // DXYN | DRW VX, VY, N - draw sprite
+		return (draw_sprite(chip8, nibble)); // DXYN | DRW VX, VY, N - draw sprite
 	else if (nibble.t == 0xE)
 		return (select_opcode_ex(nibble)); // EX9E/EXA1 | key skip
 	else if (nibble.t == 0xF)
