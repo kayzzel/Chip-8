@@ -20,7 +20,7 @@ int main_loop(t_Chip8 *chip8)
 	last_time = get_time_usec();
 	running = true;
 	set_conio_terminal_mode();
-	while (running)
+	while (running && chip8->pc < MEMORY_SIZE)
 	{
 		for (int i = 0; i < INSTRUCTIONS_PER_FRAME; i++)
 		{
@@ -39,7 +39,8 @@ int main_loop(t_Chip8 *chip8)
 			last_time = get_time_usec();
 
 			aff_screen(chip8->display);
-			poll_keypad_input(chip8);
+			if (poll_keypad_input(chip8))
+				running = false;
 		}
 		else
 			usleep(US_PER_FRAME - elapsed_time);

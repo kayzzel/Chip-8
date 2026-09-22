@@ -46,7 +46,7 @@ t_nibble	fetch_nibble(uint16_t pc, uint8_t memory[MEMORY_SIZE]);
 
 int aff_screen(const uint8_t screen[SCREEN_HEIGHT * SCREEN_WIDTH]);
 
-void poll_keypad_input(t_Chip8 *chip_8);
+int poll_keypad_input(t_Chip8 *chip_8);
 void set_conio_terminal_mode();
 
 #endif

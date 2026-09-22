@@ -1,37 +1,38 @@
 #include "chip_8.h"
 #include "opcode.h"
 
+#include <iso646.h>
 #include <stdint.h>
 
-static uint8_t	select_opcode_8(t_nibble nibble)
+static uint8_t	select_opcode_8(t_nibble nibble, t_Chip8 *chip8)
 {
 	if (nibble.n == 0)
-		return (2); // 8XY0 | LD VX, VY - set VX = VY
+		return (set_VY_to_VX(chip8, nibble));
 	else if (nibble.n == 1)
-		return (2); // 8XY1 | OR VX, VY - set VX = VX | VY
+		return (or_XY_to_VX(chip8, nibble));
 	else if (nibble.n == 2)
-		return (2); // 8XY2 | AND VX, VY - set VX = VX & VY
+		return (and_XY_to_VX(chip8, nibble));
 	else if (nibble.n == 3)
-		return (2); // 8XY3 | XOR VX, VY - set VX = VX ^ VY
+		return (xor_XY_to_VX(chip8, nibble));
 	else if (nibble.n == 4)
-		return (2); // 8XY4 | ADD VX, VY - VX += VY, VF = carry
+		return (add_VY_to_VX_carry(chip8, nibble));
 	else if (nibble.n == 5)
-		return (2); // 8XY5 | SUB VX, VY - VX -= VY, VF = 1 if no borrow
+		return (sub_VY_to_VX_carry(chip8, nibble));
 	else if (nibble.n == 6)
-		return (2); // 8XY6 | SHR VX - VF = VX & 0x1, VX >>= 1
+		return (shr_VY_to_VX_carry(chip8, nibble));
 	else if (nibble.n == 7)
-		return (2); // 8XY7 | SUBN VX, VY - VX = VY - VX, VF = 1 if no borrow
+		return (subn_VY_to_VX_carry(chip8, nibble));
 	else if (nibble.n == 0xE)
-		return (2); // 8XYE | SHL VX - VF = (VX >> 7) & 0x1, VX <<= 1
+		return (shl_VY_to_VX_carry(chip8, nibble));
 	return (1);
 }
 
 static uint8_t	select_opcode_ex(t_nibble nibble, t_Chip8 *chip8)
 {
 	if (nibble.nn == 0x9E)
-		return (skip_if_VX_pressed(chip8, nibble)); // EX9E | SKP VX - skip if key VX pressed
+		return (skip_if_VX_pressed(chip8, nibble));
 	else if (nibble.nn == 0xA1)
-		return (skip_if_VX_not_pressed(chip8, nibble)); // EXA1 | SKNP VX - skip if key VX not pressed
+		return (skip_if_VX_not_pressed(chip8, nibble));
 	return (1);
 }
 
@@ -46,15 +47,15 @@ static uint8_t	select_opcode_fx(t_nibble nibble, t_Chip8 *chip8)
 	else if (nibble.nn == 0x18)
 		return (set_sound_timer_to_VX(chip8, nibble));
 	else if (nibble.nn == 0x1E)
-		return (2); // FX1E | ADD I, VX - I += VX
+		return (add_VX_to_I(chip8, nibble));
 	else if (nibble.nn == 0x29)
-		return (2); // FX29 | LD F, VX - I = font sprite addr
+		return (set_I_to_VX_font(chip8, nibble));
 	else if (nibble.nn == 0x33)
-		return (2); // FX33 | LD B, VX - store BCD at I
+		return (store_VX_BCD(chip8, nibble));
 	else if (nibble.nn == 0x55)
-		return (2); // FX55 | LD [I], VX - store V0..VX in memory
+		return (store_registers_in_memory(chip8, nibble));
 	else if (nibble.nn == 0x65)
-		return (2); // FX65 | LD VX, [I] - load V0..VX from memory
+		return (get_registers_from_memory(chip8, nibble));
 	return (1);
 }
 
@@ -62,38 +63,38 @@ uint8_t	exec_opcode(t_nibble nibble, t_Chip8 *chip8)
 {
 	(void)chip8;
 	if (nibble.opcode == 0x00E0)
-		return (clear_screen(chip8)); // 00E0 | CLS - clear screen
+		return (clear_screen(chip8));
 	else if (nibble.opcode == 0x00EE)
-		return (2); // 00EE | RET - return from subroutine
+		return (ret_from_subroutine(chip8));
 	else if (nibble.t == 1)
-		return (2); // 1NNN | JP NNN - jump to address NNN
+		return (jump_to_NNN(chip8, nibble));
 	else if (nibble.t == 2)
-		return (2); // 2NNN | CALL NNN - call subroutine at NNN
+		return (call_NNN(chip8, nibble));
 	else if (nibble.t == 3)
-		return (2); // 3XNN | SE VX, NN - skip if VX == NN
+		return (skip_if_VX_equal_NN(chip8, nibble));
 	else if (nibble.t == 4)
-		return (2); // 4XNN | SNE VX, NN - skip if VX != NN
+		return (skip_if_VX_not_equal_NN(chip8, nibble));
 	else if (nibble.t == 5 && nibble.n == 0)
-		return (2); // 5XY0 | SE VX, VY - skip if VX == VY
+		return (skip_if_VX_equal_VY(chip8, nibble));
 	else if (nibble.t == 6)
-		return (2); // 6XNN | LD VX, NN - set VX = NN
+		return (set_VX_to_NN(chip8, nibble));
 	else if (nibble.t == 7)
-		return (2); // 7XNN | ADD VX, NN - VX += NN
+		return (add_NN_TO_VX(chip8, nibble));
 	else if (nibble.t == 8)
-		return (select_opcode_8(nibble)); // 8XY_ | ALU ops
+		return (select_opcode_8(nibble, chip8));
 	else if (nibble.t == 9 && nibble.n == 0)
-		return (2); // 9XY0 | SNE VX, VY - skip if VX != VY
+		return (skip_if_VX_not_equal_VY(chip8, nibble));
 	else if (nibble.t == 0xA)
-		return (2); // ANNN | LD I, NNN - set I = NNN
+		return (set_I_to_NNN(chip8, nibble));
 	else if (nibble.t == 0xB)
-		return (2); // BNNN | JP V0, NNN - jump to NNN + V0
+		return (jump_to_NNN_plus_V0(chip8, nibble));
 	else if (nibble.t == 0xC)
-		return (2); // CXNN | RND VX, NN - VX = random & NN
+		return (set_VX_rnd_and_NN(chip8, nibble));
 	else if (nibble.t == 0xD)
-		return (draw_sprite(chip8, nibble)); // DXYN | DRW VX, VY, N - draw sprite
+		return (draw_sprite(chip8, nibble));
 	else if (nibble.t == 0xE)
-		return (select_opcode_ex(nibble)); // EX9E/EXA1 | key skip
+		return (select_opcode_ex(nibble, chip8));
 	else if (nibble.t == 0xF)
-		return (select_opcode_fx(nibble)); // FX__ | timer/key/mem ops
+		return (select_opcode_fx(nibble, chip8));
 	return (1);
 }

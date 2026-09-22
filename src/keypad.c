@@ -46,7 +46,7 @@ static int getch()
     }
 }
 
-void poll_keypad_input(t_Chip8 *chip_8)
+int poll_keypad_input(t_Chip8 *chip_8)
 {
     int char_read;
 
@@ -56,6 +56,8 @@ void poll_keypad_input(t_Chip8 *chip_8)
     {
         char_read = getch();
         switch (char_read) {
+            case 27: return (1); // Esc quits
+
             case '1': chip_8->keypad[0x0] = 1; break;
             case '2': chip_8->keypad[0x1] = 1; break;
             case '3': chip_8->keypad[0x2] = 1; break;
@@ -77,4 +79,5 @@ void poll_keypad_input(t_Chip8 *chip_8)
             case 'v': chip_8->keypad[0xF] = 1; break;
         }
     }
+    return (0);
 }

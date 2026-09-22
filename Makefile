@@ -27,7 +27,15 @@ UTILS_SRCS				:=	$(addprefix $(UTILS_DIR), \
 							time_utils.c \
 							)
 
-OPCODE_SRC		:=	opcode/opcode_select.c
+OPCODE_SRC		:=	$(addprefix opcode/, \
+					opcode_select.c \
+					ops_registers.c \
+					ops_memory.c \
+					ops_flow.c \
+					ops_display.c \
+					ops_timers.c \
+					ops_input.c \
+					)
 
 MAIN_SRCS		:=	main.c \
 					loading.c \
