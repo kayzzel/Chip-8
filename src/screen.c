@@ -28,18 +28,24 @@ static uint8_t did_screen_changed(const uint8_t current_screen[SCREEN_HEIGHT * S
 
 int aff_screen(const uint8_t screen[SCREEN_HEIGHT * SCREEN_WIDTH])
 {
+    static bool cleared = false;
+
     if (!did_screen_changed(screen))
         return (0);
 
-    // 1. Move cursor to top-left corner
-    write(1, "\x1b[H", 3);
+    if (!cleared)
+    {
+        write(1, "\x1b[2J", 4); // clear entire screen, once
+        cleared = true;
+    }
+    write(1, "\x1b[H", 3);      // then just home the cursor each frame
 
     // 2. Draw Top Border (╔═════════════╗)
     fputs("╔", stdout);
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         fputs("═", stdout);
     }
-    fputs("╗\n", stdout);
+    fputs("╗\r\n", stdout);
 
     // 3. Draw Screen Content with Side Borders (║ █ ║)
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -48,7 +54,7 @@ int aff_screen(const uint8_t screen[SCREEN_HEIGHT * SCREEN_WIDTH])
             // Uses solid block '█' for 1, space ' ' for 0
             fputs(screen[y * SCREEN_WIDTH + x] ? "█" : " ", stdout);
         }
-        fputs("║\n", stdout); // Right border
+        fputs("║\r\n", stdout); // Right border
     }
 
     // 4. Draw Bottom Border (╚═════════════╝)
@@ -56,7 +62,7 @@ int aff_screen(const uint8_t screen[SCREEN_HEIGHT * SCREEN_WIDTH])
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         fputs("═", stdout);
     }
-    fputs("╝\n", stdout);
+    fputs("╝\r\n", stdout);
 
     // Flush stream to draw everything in a single pass (prevents flicker)
     fflush(stdout);

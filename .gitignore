@@ -1,6 +1,8 @@
 # Other
 chip-8
 compile_flags.txt
+chip8-roms
+chip8-test-suite 
 
 # Prerequisites
 *.d
